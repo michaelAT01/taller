@@ -34,7 +34,7 @@ class Token{
         $con = $this->container->get('bd');
         $sql= "select modificarTokenR(.idUsuario,:tk);";
         $query=$con-> prepaare($sql);
-        $query->execute(["idUsuario"=>$idUsuario,"tk"=>$$tokenRef]);
+        $query->execute(["idUsuario"=>$idUsuario,"tk"=>$tokenRef]);
         $datos=$query->fetch(PDO::FETCH_NUM);
         $query=null;
         $con= null;

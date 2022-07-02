@@ -2,6 +2,12 @@ USE taller;
 
 DELIMITER $$
 
+DROP PROCEDURE IF EXISTS buscarOficinista$$
+CREATE PROCEDURE buscarOficinista (_id int, _idOficinista varchar(15))
+begin
+    select * from oficinista where id = _id or idOficinista = _idOficinista;
+end$$
+
 DROP FUNCTION IF EXISTS nuevoOficinista$$
 CREATE FUNCTION nuevoOficinista (
     _idOficinista Varchar(15),

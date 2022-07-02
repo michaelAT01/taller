@@ -14,6 +14,37 @@ class Usuario
     public function __construct(public ContainerInterface $container)
     {
     }
+    public function buscarNombre($id)
+    {
+        $car = substr($id, 0, 1);
+        $proc = match ($car) {
+            'C', 'c' => 'buscarCliente',
+            'T', 't' => 'buscarTecnico',
+            'O', 'o' => 'buscarOficinista',
+            'A', 'a' => 'buscarAdministrador',
+            default => 'buscarCliente'
+        };
+
+        $proc .= "(-1,'$id');"; //LLamada de procedimiento en sql
+        $sql = "call $proc;";
+
+        $con = $this->container->get('bd');
+        $query = $con->prepare($sql);
+        $query->execute();
+        if ($query->rowCount() > 0) {
+            $res = $query->fetch(PDO::FETCH_ASSOC);
+        } else {
+            $res = [];
+        }
+        $query = null;
+        $con = null;
+        $res=$res['nombre'];
+        if(str_contains($res," ")){
+            $res=substr($res,0,strpos($res," "));
+        }
+        return $res;
+    }
+
     public   function autenticar($idUsuario, $passw)
     {
         $datos = $this->buscarUsuario(idUsuario: $idUsuario);
@@ -101,23 +132,21 @@ class Usuario
             $query->bindParam('id', $id, PDO::PARAM_INT);
             $query->execute();
             $res = $query->fetchColumn();
-            if($res==1){
+            if ($res == 1) {
                 $sql = "select eliminarUsuario(:idUsuario);";
                 $query = $con->prepare($sql);
                 $query->bindParam('idUsuario', $idUsr, PDO::PARAM_INT);
                 $query->execute();
-                $res= $query->fetch(PDO::FETCH_NUM);
-
+                $res = $query->fetch(PDO::FETCH_NUM);
             }
             $con->commit();
-           
         } catch (PDOException $e) {
             $con->rollback();
         }
         $query = null;
         $con = null;
-        if(is_array($res)){
-            $res=$res[0];
+        if (is_array($res)) {
+            $res = $res[0];
         }
         return $res;
     }

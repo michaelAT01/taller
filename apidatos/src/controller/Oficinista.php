@@ -25,7 +25,7 @@ class Oficinista extends Usuario{
     $d['idUsuario'] = $d['idOficinista'];
     //Esta linea puede ser del cliente o generado automaticamente
     $d['passw'] = Hash::hash($d['idOficinista']);
-    $res = $this->guardarUsuario($sql, $d, 3);
+    $res = $this->guardarUsuario($sql, $d, 2);
     $status = $res == 0 ? 201 : 409;
     return $response
         ->withStatus($status);

@@ -19,8 +19,8 @@ $app->addErrorMiddleware(true, true, true);
 $app->add(new Tuupola\Middleware\JwtAuthentication([
     "secure" => false,
     "secret" => getenv('key'),
-    //"path"=> ['/Cliente'], lo que no tiene privilegio
-    "ignore" => ["/auth","/admin","/filtro","/Cliente","/usuario","/tecnico","/oficinista"],
+    //"path"=> ['/Cliente'], //lo que no tiene privilegio
+    "ignore" => ["/auth/iniciar"],
     "algorithm"=>"HS256"
 ]));
 $container = $app->getContainer();

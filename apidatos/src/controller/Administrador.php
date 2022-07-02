@@ -140,7 +140,7 @@ class Administrador extends Usuario
         $d['idUsuario'] = $d['idAdmin'];
         //Esta linea puede ser del cliente o generado automaticamente
         $d['passw'] = password_hash($d['idAdmin'], PASSWORD_BCRYPT, ['cost' => 10]);
-        $res = $this->guardarUsuario($sql, $d, 0);
+        $res = $this->guardarUsuario($sql, $d, 1);
         $status = $res == 0 ? 201 : 409;
         return $response
             ->withStatus($status);

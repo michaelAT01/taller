@@ -78,7 +78,7 @@ CREATE FUNCTION editarTecnico (
     ) RETURNS INT(1) 
 begin
     declare _cant int;
-    select count(id) into _cant from tecnico where id = _id;
+    select count(idTecnico) into _cant from tecnico where idTecnico = _idTecnico;
     if _cant > 0 then
         update tecnico set
             idTecnico = _idTecnico,
@@ -89,7 +89,7 @@ begin
             celular = _celular,
             direccion = _direccion,
             correo = _correo
-        where id = _id;
+        where idTecnico = _idTecnico;
     end if;
     return _cant;
 end$$

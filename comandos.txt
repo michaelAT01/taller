@@ -1,0 +1,5 @@
+ng g cl shared/models/role.model --skip-tests
+ng g g shared/guards/login --skip-tests //Creamos los guardas 
+ng g s shared/services/auth --skip-tests
+ng g s shared/services/token --skip-tests
+ng g interceptor shared/helpers/jwt --skip-tests

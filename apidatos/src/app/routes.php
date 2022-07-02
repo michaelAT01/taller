@@ -91,7 +91,7 @@ $app->group('/tecnico', function (RouteCollectorProxy $tecnico) {
     //Retornar todos los registros con limit
     $tecnico->get('/{indice}/{limite}', Tecnico::class . ':filtrar');
     //Retornar un registro por código  
-    //$cliente->get('/{id}', Cliente::class . ':buscar');
+    $tecnico->get('/{id}', Tecnico::class . ':buscar');
     //Crear nuevo  
     $tecnico->post('/', Tecnico::class . ':crearTecnico');
     //modificar 

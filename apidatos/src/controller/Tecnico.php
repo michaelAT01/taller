@@ -95,5 +95,27 @@ public function filtrar(Request $request, Response $response, $args)
             ->withHeader('Content-Type', 'Application/json')
             ->withStatus($status);
     }
+    public function buscar(Request $request, Response $response, $args)
+    {
+        //Retornar un registro por código
+        $sql = "call buscarTecnico(:id,'');"; // call para procedimientos almacenados
+        $con = $this->container->get('bd');
+        $query = $con->prepare($sql);
+        $query->bindParam('id', $args['id'], PDO::PARAM_STR); //bindParam vincula parametro
+        $query->execute();
+        if ($query->rowCount() > 0) {
+            $res = $query->fetch();
+            $status = 200;
+        } else {
+            $res = [];
+            $status = 204;
+        }
+        $query = null;
+        $con = null;
 
+        $response->getBody()->write(json_encode($res));
+        return $response
+            ->withHeader('Content-Type', 'Application/json')
+            ->withStatus($status);
+    }
 }

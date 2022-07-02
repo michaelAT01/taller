@@ -19,9 +19,10 @@ class Auth extends Usuario
     public function iniciarSesion(Request $request, Response $response, $args)
     {
         $body = json_decode($request->getBody());
+        $nombre = $this->buscarNombre($body->idUsuario);
         $res = $this->autenticar($body->idUsuario, $body->passw);
         if ($res) {
-            $retorno = $this->generarTokens($body->idUsuario, $res['rol']);
+            $retorno = $this->generarTokens($body->idUsuario, $res['rol'],$nombre);
             $response->getBody()->write(json_encode($retorno));
             $status = 200;
         } else {
@@ -44,22 +45,20 @@ class Auth extends Usuario
     {
         $body = json_decode($request->getBody());
         $rol = $this->verificarRefresco($body->idUsuario, $body->tkR);
-
-        if($rol){
-            $resultado = $this->generarTokens($body->idUsuario, $rol);           
+        
+        $nombre = $this->buscarNombre($body->idUsuario);
+        if ($rol) {
+            $resultado = $this->generarTokens($body->idUsuario, $rol,$nombre);
         }
-        if(isset($Resultado)){
+        if (isset($resultado)) {
             $status = 200;
-            $response ->getBody()->write(json_encode($resultado));
-            
-        }else {
+            $response->getBody()->write(json_encode($resultado));
+        } else {
             $status = 401;
         }
         return $response
-        ->withHeader('Content-Type', 'Application/json')
-        ->withStatus(200);
-
-
+            ->withHeader('Content-Type', 'Application/json')
+            ->withStatus(200);
     }
 
     private function verificarRefresco(String $idUsuario, string $tokenRef)
@@ -73,15 +72,16 @@ class Auth extends Usuario
         $con = null;
         return $datos;
     }
-    public function generarTokens(string $idUsuario, int $rol)
+    public function generarTokens(string $idUsuario, int $rol,string $nombre)
     {
         $key = getenv('key');
         $payload = [
             "iss" => $_SERVER['SERVER_NAME'],
             "iat" => time(),
-            "exp" => time() + (60),
+            "exp" => time() + (3600),
             "sub" => $idUsuario,
-            "rol" => $rol
+            "rol" => $rol,
+            "nom" => $nombre
         ];
         $payloadRf = [
             "iss" => $_SERVER['SERVER_NAME'],
@@ -92,7 +92,7 @@ class Auth extends Usuario
         $this->modificarToken(idUsuario: $idUsuario, tokenRef: $tkRef);
         return [
             "token" => JWT::encode($payload, $key, 'HS256'),
-            "refreshToken => $tkRef"
+            "refreshToken" => $tkRef
         ];
     }
 
@@ -108,4 +108,3 @@ class Auth extends Usuario
         return $datos;
     }
 }
-

@@ -1,0 +1,48 @@
+
+<div class="container mt-4 w-50 ">
+  <div class="card">
+
+    <div class="card-header text-center">
+      <h3>Cambiar contrasena</h3>
+    </div>
+
+    <div class="card-body">
+     <form id="frmPassw" [formGroup]="frmPassw" (ngSubmit)="onSubmit()">
+        <div class="form-floating mb-3">
+          <input type="email" class="form-control" formControlName="idUsuario" id="idUsuario" placeholder="Id Usuario"
+          >
+          <label for="idUsuario">Id Usuario</label>
+        </div>
+
+        <div class="form-floating">
+          <input type="password" class="form-control" formControlName="passw" id="passw" placeholder="Contrasena"
+          >
+          <label for="passw">Nueva contrasena</label>
+        </div>
+
+        <div class="form-floating mt-4">
+          <input type="password" class="form-control" formControlName="passw" id="passwR" placeholder="Contrasena"
+
+          >
+          <label for="passw">Confirmar Contrasena</label>
+        </div>
+
+
+
+      </form>
+    </div>
+
+    <div class="card-footer">
+      <div class="d-grid gap-2">
+        <button class="btn btn-primary"
+                [disabled]="frmPassw.invalid"
+                type="submit"
+                form="frmPassw"
+        >
+          Cambiar Contrasena
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

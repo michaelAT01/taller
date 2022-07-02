@@ -11,7 +11,9 @@ use PDOException;
 
 class Cliente extends Usuario
 {
-    public function __construct(public ContainerInterface $container){  }
+    public function __construct(public ContainerInterface $container)
+    {
+    }
     public function MostrarTodos(Request $request, Response $response, $args)
     {
         //Retornar todos los registros con limit
@@ -41,12 +43,6 @@ class Cliente extends Usuario
         $indice = ($args['indice'] - 1) * $limite;
 
         $datos = $request->getQueryParams();
-        /*
-        $cadena = "%" . $datos['idCliente'] . "%&"
-            . "%" . $datos['nombre'] . "%&"
-            . "%" . $datos['apellido1'] . "%&"
-            . "%" . $datos['apellido2'] . "%&";*/
-
         $cadena = "";
         foreach ($datos as $valor) {
             $cadena .= "%$valor%&";
@@ -60,50 +56,35 @@ class Cliente extends Usuario
 
         $query = null;
         $con = null;
-
-        $response->getBody()->write(json_encode($res));
+        $respuesta['cant'] = $this->numRegs($cadena);
+        $respuesta['datos'] = $res;
+        $response->getBody()->write(json_encode($respuesta));
         return $response
             ->withHeader('Content-Type', 'Application/json')
             ->withStatus($status);
     }
 
 
-    public function numRegs(Request $request, Response $response, $args)
+    private function numRegs($cadena)
     {
-        //Retornar todos los registros con limit
-
-        $datos = $request->getQueryParams();
-        /*
-        $cadena = "%" . $datos['idCliente'] . "%&"
-            . "%" . $datos['nombre'] . "%&"
-            . "%" . $datos['apellido1'] . "%&"
-            . "%" . $datos['apellido2'] . "%&";*/
-
-        $cadena = "";
-        foreach ($datos as $valor) {
-            $cadena .= "%$valor%&";
-        }
         $sql = "call numRegsCliente('$cadena');";
         $con = $this->container->get('bd');
         $query = $con->prepare($sql);
         $query->execute();
-        $res['cant'] = $query->fetch(PDO::FETCH_NUM)[0];
+        $res = $query->fetch(PDO::FETCH_NUM)[0];
         //$res2['cant']= $res[0];
         // var_dump($res);
         //die();
         $query = null;
         $con = null;
-        $response->getBody()->write(json_encode($res));
-        return $response
-            ->withHeader('Content-Type', 'Application/json')
-            ->withStatus(200);
+        return $res;
     }
 
 
     public function buscar(Request $request, Response $response, $args)
     {
         //Retornar un registro por código
-        $sql = "call buscarCliente(:id);"; // call para procedimientos almacenados
+        $sql = "call buscarCliente(:id,'');"; // call para procedimientos almacenados
         $con = $this->container->get('bd');
         $query = $con->prepare($sql);
         $query->bindParam('id', $args['id'], PDO::PARAM_STR); //bindParam vincula parametro
@@ -171,22 +152,23 @@ class Cliente extends Usuario
             ->withStatus($status);
     }
 
-    public function eliminar(Request $request, Response $response, $args) {
+    public function eliminar(Request $request, Response $response, $args)
+    {
         //$id = $args['id'];
         $idCliente = $this->buscarIdCliente($args["id"]);
         $res = 0;
         if ($idCliente !== 0) {
             $sql = "select eliminarCliente(:id)"; //call procedimiento no retorna valores -- Select funcion si retorna valores
             $res = $this->eliminarUsuario($sql, $idCliente, $args["id"]);
-        } 
-        $status = match($res){
-            '0',0 =>404,
-            '1', 1=>200,
-            '2', 2=>412
+        }
+        $status = match ($res) {
+            '0', 0 => 404,
+            '1', 1 => 200,
+            '2', 2 => 412
         };
-     
-        
-        
+
+
+
         $status = $res > 0 ? 200 : 404;
         //$status = $res == 1 ? 200 : 404;
 
@@ -194,7 +176,8 @@ class Cliente extends Usuario
 
             ->withStatus($status);
     }
-    private function buscarIdCliente($id){
+    private function buscarIdCliente($id)
+    {
         $sql = "call buscarCliente(:id, '');"; //call procedimiento no retorna valores -- Select funcion si retorna valores
         $con = $this->container->get('bd');
         $query = $con->prepare($sql);
